@@ -1,25 +1,19 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import Menu from "./pages/menu";
+import Login from "./pages/login";
+import Transaksi from "./pages/transaksi";
+import Navbar from "./components/Navbar"
+import { Route, Routes, BrowserRouter } from "react-router-dom";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+export default function App() {
+    return (
+        <BrowserRouter> 
+            <Navbar />
+            <Routes>
+                <Route path="/menu" element={<Menu />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/transaksi" element={<Transaksi />} />
+            </Routes>
+        </BrowserRouter>
+    )
 }
-
-export default App;
