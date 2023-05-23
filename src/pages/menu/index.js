@@ -184,7 +184,7 @@ export default function Menu() {
 
       <input
         type="text"
-        className='form-control my-2'
+        className='form-control my-2 mb-3'
         placeholder='Pencarian'
         value={keyword}
         onChange={e => setKeyword(e.target.value)}

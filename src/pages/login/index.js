@@ -5,35 +5,35 @@ import './loginStyle.css'
 const Login = () => {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
+    const [showPassword, setShowPassword] = useState(false)
 
     const handleLogin = event => {
         event.preventDefault()
         let payLoad = { username, password }
-
         let url = "http://localhost:8080/auth"
 
         axios.post(url, payLoad)
             .then(response => {
-                if (response.data.status == true) {
-                    /** Login success */
+                if (response.data.status === true) {
                     /** grab token */
                     let token = response.data.token
                     /** grab data user */
                     let user = response.data.data
-
-                    /** store to local storage */
+                    
+                    /** simpan data ke localstorage */
                     localStorage.setItem('token', token)
                     localStorage.setItem('user', JSON.stringify(user))
 
+                    /** login success */
                     window.alert("Login success !")
 
-                    /** redirect to menu */
+                    /** redirect ke endpoint Menu */
                     window.location.href = "/menu"
                 } else {
-                    /** Login failed */
-                    window.alert("Username atau password salah !")
+                    /** login gagal */
+                    window.alert("Username or password is incorrect !")
 
-                    /** clear form */
+                    /** kosongkan field password & username */
                     setUsername("")
                     setPassword("")
                 }
@@ -41,6 +41,10 @@ const Login = () => {
             .catch(error => {
                 window.alert(error)
             })
+    }
+
+    const togglePassword = () => {
+        setShowPassword(!showPassword)
     }
 
     return (
@@ -55,9 +59,12 @@ const Login = () => {
                         placeholder="Username"
                         value={username} onChange={e => setUsername(e.target.value)} />
 
-                    <input type="password" className="form-control mb-2 rounded-pill" required={true}
-                        placeholder="Password"
-                        value={password} onChange={e => setPassword(e.target.value)} />
+                    <div className="input-group mb-2">
+                        <input type={showPassword ? "text" : "password"} id="password" className="form-control rounded-pill" required={true}
+                            placeholder="Password"
+                            value={password} onChange={e => setPassword(e.target.value)} />
+                    </div>
+                            <input type="checkbox" className="ms-2 mt-1 mb-3" onChange={togglePassword} /> <b><small>Show Password</small></b>
 
                     <button type="submit" className="fw-semibold btn btn-dark w-100 mb-2 rounded-pill">
                         Login

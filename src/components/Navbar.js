@@ -13,7 +13,7 @@ function BasicExample() {
   return (
     <Navbar className='navbar' variant='dark' expand="lg">
       <Container>
-        <Navbar.Brand className='me-auto fw-semibold' href="/home"><span className='fw-bold'>WIKUSAMA</span> <span className='fw-bolder fst-italic text-dark'>CAFE</span>☕</Navbar.Brand>
+        <Navbar.Brand className='me-auto fw-semibold' href="/home"><span className='fw-bold'>WIKUSAMA</span><span className='fw-bolder fst-italic text-dark'>CAFE</span>☕</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ms-auto">
@@ -23,7 +23,7 @@ function BasicExample() {
             <Nav.Link href="/transaksi">Transaksi</Nav.Link>
           </Nav>
           <Nav className='ms-auto'>
-            <button className="btn btn-dark" >Logout</button>
+            <button className="btn-logout btn btn-dark" >Logout</button>
           </Nav>
         </Navbar.Collapse>
       </Container>

@@ -9,26 +9,8 @@
     background: url('/assets/20230517_161159.jpg') no-repeat;
     background-size: cover;
     z-index: -1;
-    -webkit-filter: blur(5px);
-    -moz-filter: blur(5px);
-    -o-filter: blur(5px);
-    -ms-filter:blur(5px);
-    filter: blur(5px);
-}
-
-.bg-image::before {
-    content: 0;
-    display: block;
-    position: absolute;
-    z-index: -1;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    background: -webkit-linear-gradient(top, rgba(187, 61, 61, 0.5),rgba(226, 85, 85, 0.5));
-    background: -moz-linear-gradient(top, rgba(210, 64, 64, 0.5), rgba(226, 78, 78, 0.5));
-    background: -o-linear-gradient(top, rgba(221, 72, 72, 0.5), rgba(190, 65, 65, 0.3));
-
+    filter: blur(8px);
+    filter: brightness(35%);
 }
 
 .from-box{
