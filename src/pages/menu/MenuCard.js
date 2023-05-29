@@ -4,7 +4,7 @@ import './menu.css'
 export default function MenuCard(props) {
     return (
         <div className='card mb-4 text-bg-light'>
-            <div className="card-footer border-0">
+            <div className="card-footer gambar border-0 d-flex justify-center align-middle">
                 <img src={props.img} className="card-img-top" alt="img-menu"></img>
             </div>
             <div class="card-body">
@@ -14,10 +14,10 @@ export default function MenuCard(props) {
                 <small className="card-text"><b className='text-dark'>Harga: Rp.</b>{props.harga}</small>
             </div>
             <div className="card-footer p-3 d-flex justify-content-center border-0">
-                <button className='btn btn-dark w-50 rounded-pill' onClick={() => props.onEdit()}>
+                <button className='btn btn-dark w-50' onClick={() => props.onEdit()}>
                     Edit
                 </button>
-                <button className="btn btn-danger mx-1 w-50 rounded-pill" onClick={() => props.onDelete()}>
+                <button className="btn btn-danger mx-1 w-50" onClick={() => props.onDelete()}>
                     Delete
                 </button>
             </div>

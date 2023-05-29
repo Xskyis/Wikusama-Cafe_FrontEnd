@@ -2,14 +2,26 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import './NavbarStyle.css'
+import Dropdown from 'react-bootstrap/Dropdown';
 
-function BasicExample() {
+const Navigasi = ({ handleSidebarToggle }) => {
   const isLoginPage = window.location.pathname === '/login';
+
 
   if (isLoginPage) {
 
     return null;
   }
+
+  const handleLogout = () => {
+    if (window.confirm(`Apakah Anda Ingin Logout ?`)) {
+      localStorage.removeItem(`token`)
+      localStorage.removeItem(`user`)
+      /** return to login */
+      window.location.href = "/login"
+    }
+  }
+
   return (
     <Navbar className='navbar' variant='dark' expand="lg">
       <Container>
@@ -17,13 +29,19 @@ function BasicExample() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ms-auto">
-            <Nav.Link href="/home">Home</Nav.Link>
-            <Nav.Link href="/menu">Menu</Nav.Link>
-            <Nav.Link href="/">Meja</Nav.Link>
-            <Nav.Link href="/transaksi">Transaksi</Nav.Link>
+            {/** display react-clock */}
           </Nav>
           <Nav className='ms-auto'>
-            <button className="btn-logout btn btn-dark" >Logout</button>
+            <Dropdown>
+              <Dropdown.Toggle variant="dark" id="dropdown-basic" >
+                Login as <i class="bi bi-person"></i> <b>{JSON.parse(localStorage.getItem('user')).nama_user}</b>
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                <Dropdown.Item onClick={() => handleLogout()}> <i class="bi bi-box-arrow-in-right"></i> <b className='text-dark'>LogOut</b></Dropdown.Item>
+                <Dropdown.Item><i class="bi bi-person-badge-fill"></i> Position: <b>{JSON.parse(localStorage.getItem('user')).role}</b>  </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+
           </Nav>
         </Navbar.Collapse>
       </Container>
@@ -31,4 +49,4 @@ function BasicExample() {
   );
 }
 
-export default BasicExample;
+export default Navigasi;

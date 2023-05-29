@@ -28,7 +28,7 @@ const Login = () => {
                     window.alert("Login success !")
 
                     /** redirect ke endpoint Menu */
-                    window.location.href = "/menu"
+                    window.location.href = "/home"
                 } else {
                     /** login gagal */
                     window.alert("Username or password is incorrect !")

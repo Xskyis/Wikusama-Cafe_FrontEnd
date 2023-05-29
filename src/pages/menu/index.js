@@ -2,6 +2,8 @@ import React from 'react'
 import MenuCard from './MenuCard'
 import { useState, useEffect } from 'react'
 import { Modal } from 'bootstrap'
+import Form from 'react-bootstrap/Form';
+import InputGroup from 'react-bootstrap/InputGroup';
 
 /** library for connect to another server */
 import axios from 'axios'
@@ -29,6 +31,8 @@ export default function Menu() {
 
   /** define state to store status of menu */
   const [isEdit, setIsEdit] = useState(true)
+
+  /** define state to store status meja */
 
   /**  */
   const [keyword, setKeyword] = useState(" ")
@@ -74,6 +78,7 @@ export default function Menu() {
     setIsEdit(false)
 
     /** close modal */
+    modal.hide()
   }
 
   async function edit(menu) {
@@ -176,20 +181,25 @@ export default function Menu() {
 
   return (
     <div className='container-fluid p-4 w-100'>
-      <h3 className='fw-bold'>Daftar Menu</h3>
-      <br />
-      <button className='btn btn-dark mb-3' onClick={() => addMenu()}>
+      <div className="title d-flex justify-start mb-2">
+        <h3 className='text-secondary fw-normal'>DAFTAR MENU</h3>
+      </div>
+      <button className='btn btn-sm btn-dark mb-1' onClick={() => addMenu()}>
         Tambah Menu
       </button>
 
-      <input
-        type="text"
-        className='form-control my-2 mb-3'
-        placeholder='Pencarian'
-        value={keyword}
-        onChange={e => setKeyword(e.target.value)}
-        onKeyUp={e => searching(e)}
-      />
+      <InputGroup className="mb-3 mt-3">
+        <InputGroup.Text id="basic-addon1"><i class="bi bi-search"></i></InputGroup.Text>
+        <Form.Control
+          placeholder="Pencarian"
+          aria-label="Pencarian"
+          aria-describedby="basic-addon1"
+          type="text"
+          value={keyword}
+          onChange={e => setKeyword(e.target.value)}
+          onKeyUp={e => searching(e)}
+        />
+      </InputGroup>
 
       <div className="row">
         {menus.map(menu => (
