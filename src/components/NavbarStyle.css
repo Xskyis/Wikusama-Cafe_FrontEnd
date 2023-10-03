@@ -6,3 +6,8 @@
     padding-right: 125px;
 }
 
+@media (min-width: 767px) {
+    .drop-nav {
+        color: blue;
+    }
+  }

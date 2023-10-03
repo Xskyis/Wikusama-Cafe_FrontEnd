@@ -13,18 +13,20 @@ const Sidebar = ({ title, children }) => {
     }, [])
 
     return (
-        <div class="container-fluid">
-            <div class="row nowrap">
+        <div className="container-fluid">
+            <div className="row nowrap">
 
-                <div class="col-2 vh-100 sticky-top" style={{ backgroundColor: `#20262E` }}>
-                    <div class="d-flex justify-content-center my-3 bg-dark shadow-2xl rounded p-2">
-                        <h4 class="text-white">Selamat datang, {role} <span class="badge bg-light text-black">{username}</span> !😃</h4>
+                <div className="sidebar col-2 vh-100 sticky-top" style={{ backgroundColor: `#20262E` }}>
+
+                    <div className="d-flex justify-content-center my-5 pt-5 bg-dark shadow-white rounded p-2">
+                        <h4 className="text-white">Selamat datang, {role} <span class="badge bg-light text-black">{username}</span> !😃</h4>
                     </div>
 
                     <div className="w-100 p-2 d-flex flex-column">
+
                         <Link className={`w-100 p-3 text-start text-white text-decoration-none h6 ${['admin', 'kasir', 'manajer'].includes(role) ? 'd-block' : 'd-none'}`} to="/home">
                             <i className="bi bi-house me-2"></i>
-                            Dashboard
+                            Home
                         </Link>
 
                         <Link className={`w-100 p-3 text-start text-white text-decoration-none h6 ${['admin'].includes(role) ? 'd-block' : 'd-none'}`} to="/menu">
@@ -37,7 +39,7 @@ const Sidebar = ({ title, children }) => {
                             User
                         </Link>
 
-                        <Link className={`w-100 p-3 text-start text-white text-decoration-none h6 ${['admin', 'kasir'].includes(role) ? 'd-block' : 'd-none'}`} to="/meja">
+                        <Link className={`w-100 p-3 text-start text-white text-decoration-none h6 ${['admin','kasir'].includes(role) ? 'd-block' : 'd-none'}`} to="/meja">
                             <i className="bi bi-plus-square me-2"></i>
                             Meja
                         </Link>
@@ -50,12 +52,12 @@ const Sidebar = ({ title, children }) => {
                     </div>
                 </div>
 
-                
-                <div class="col min-vh-100 p-0">
-                    <div class="w-100 p-1">
+                <div className="col min-vh-100 p-0">
+                    <div className="w-auto">
                         {children}
                     </div>
                 </div>
+
             </div>
         </div>
     )

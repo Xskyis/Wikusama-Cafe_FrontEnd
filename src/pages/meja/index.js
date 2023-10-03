@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Modal } from "bootstrap/dist/js/bootstrap.bundle";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const baseURL = `http://localhost:8080`
 const header = {
@@ -51,7 +53,7 @@ const Meja = () => {
             let url = `${baseURL}/meja/${id_meja}`
             axios.put(url, payload, header)
                 .then(response => {
-                    window.alert(`Data meja berhasil diubah`)
+                    toast.success(`Data meja berhasil diubah!`)
                     // recall meja
                     getMeja()
                 })
@@ -61,7 +63,7 @@ const Meja = () => {
             let url = `${baseURL}/meja`
             axios.post(url, payload, header)
                 .then(response => {
-                    window.alert(`Data meja berhasil ditambah!`)
+                    toast.success(`Data meja berhasil ditambahkan!`)
                     // recall meja
                     getMeja()
                 })
@@ -70,11 +72,11 @@ const Meja = () => {
     }
 
     const dropMeja = (item) => {
-        if (window.confirm(`Are you sure ?`)) {
+        if (window.confirm(`Apakah anda yakin ingin menghapus meja ${item.nomor_meja} ?`)) {
             const url = `${baseURL}/meja/${item.id_meja}`
             axios.delete(url, header)
                 .then(response => {
-                    window.alert(`Data meja berhasil dihapus!`)
+                    toast.success(`Meja ${item.nomor_meja} berhasil dihapus!`)
                     //recall meja
                     getMeja()
                 })
@@ -88,14 +90,14 @@ const Meja = () => {
     }, [])
 
     return (
-        <div className="container-fluid p-4 w-100">
-            <h3 className="text-secondary fw-normal mb-3">DAFTAR MEJA</h3>
-            <button className="btn btn-sm btn-dark mb-3" onClick={() => addMeja()}>
-                Tambah Meja
+        <div className="container-fluid p-16 w-100">
+            <h3 className="text-secondary fw-normal mb-1">DAFTAR MEJA</h3>
+            <button className="btn btn-sm btn-dark mb-2" onClick={() => addMeja()}>
+                <i className="bi bi-plus-circle"></i> Meja
             </button>
             <ul className="list-group">
                 {meja.map(table => (
-                    <li className="list-group-item mb-2"
+                    <li className="list-group-item rounded-lg mb-2 shadow-lg"
                         key={`keyMeja${table.id_meja}`}>
                         <div className="row">
                             <div className="col-md-4">
@@ -109,7 +111,9 @@ const Meja = () => {
                                 <small className="text-danger">
                                     Status
                                 </small> <br />
-                                {table.status ? 'available' : 'in use'}
+                                <span className={`badge ${table.status ? 'bg-green-500' : 'bg-red-500'}`}>
+                                    {table.status ? 'Available' : 'In use'}
+                                </span>
                             </div>
 
                             <div className="col-md-4">
@@ -117,12 +121,10 @@ const Meja = () => {
                                     Action
                                 </small> <br />
                                 <button className="btn btn-sm btn-dark me-2" onClick={() => editMeja(table)}>
-                                    <i className="bi bi-pencil">
-                                    </i>
+                                    <i className="bi bi-pencil"></i>
                                 </button>
                                 <button className="btn btn-sm btn-danger" onClick={() => dropMeja(table)}>
-                                    <i className="bi bi-trash">
-                                    </i>
+                                    <i className="bi bi-trash"></i>
                                 </button>
                             </div>
 
@@ -152,7 +154,7 @@ const Meja = () => {
                                     onChange={e => setStatus(e.target.value)}
                                 >
                                     <option value="">Pilih Status</option>
-                                    <option value={true}>Available</option>
+                                    <option value={true} className="text-green-500">Available</option>
                                     <option value={false}>In use</option>
                                 </select>
 

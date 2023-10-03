@@ -99,14 +99,17 @@ const User = () => {
 
     return (
         <>
-            <div className="container-fluid w-100 p-3">
+            <div className="container-fluid w-100 p-16">
+
                 <div className="row">
                     <div className="col-12">
-                        <h3 className="text-left fw-normal text-secondary">DATA USER</h3>
-                        <button className="btn btn-sm btn-dark mb-2" onClick={addUser}>Tambah User</button>
+                        <h3 className="text-left fw-normal text-secondary mb-2">DATA USER</h3>
+                        <button className="btn btn-sm btn-dark mb-2" onClick={addUser}>
+                        <i class="bi bi-plus-circle"></i> User
+                        </button>
                         <ul className="list-group">
                             {user.map((item, index) => (
-                                <li className="list-group-item" key={index}>
+                                <li className="list-group-item rounded-md shadow-lg mb-2" key={index}>
                                     <div className="row">
                                         <div className="col-md-2">
                                             <small className="text-danger">
@@ -139,7 +142,8 @@ const User = () => {
                                         <div className="col-md-2">
                                             <small className="text-danger">
                                                 Aksi
-                                            </small><br />
+                                            </small>
+                                            <br />
                                             <button className="btn btn-sm btn-dark me-2" onClick={() => editUser(item)}>
                                                 <i className="bi bi-pencil">
                                                 </i>
@@ -156,11 +160,12 @@ const User = () => {
                         </ul>
                     </div>
                 </div>
+
                 <div className="modal fade" id="modal-user">
                     <div className="modal-dialog">
                         <div className="modal-content">
-                            <div className="modal-header">
-                                <h5 className="modal-tittle">Form User</h5>
+                            <div className="modal-header bg-red-800">
+                                <h5 className="modal-tittle text-white">Form User</h5>
                                 <button className="btn-close" data-bs-dismiss="modal"></button>
                             </div>
                             <div className="modal-body">
@@ -189,10 +194,10 @@ const User = () => {
                                     </div>
                                     <div className="mb-2">
                                         <label className="form-label">Password</label>
-                                        <input type={showPassword ? "text" : "password"} className="form-control" value={password} onChange={event => setPassword(event.target.value)} required />
+                                        <input type={showPassword ? "text" : "password"} placeholder="At least 8 character" className="form-control" value={password} onChange={event => setPassword(event.target.value)} required />
                                     </div>
                                     <div className="mb-2">
-                                        <button className="btn btn-primary me-2">Simpan</button>
+                                        <button className="btn btn-dark me-2">Simpan</button>
                                         <button className="btn btn-danger" data-bs-dismiss="modal">Batal</button>
                                     </div>
                                 </form>
@@ -200,11 +205,10 @@ const User = () => {
                         </div>
                     </div>
                 </div>
+
             </div>
         </>
     )
-
-
 }
 
 export default User

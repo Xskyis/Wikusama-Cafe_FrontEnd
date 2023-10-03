@@ -2,8 +2,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Modal } from "bootstrap";
+import { Chart } from "react-google-charts";
+import InputGroup from 'react-bootstrap/InputGroup';
+import Form from 'react-bootstrap/Form';
 import './transaksiStyle.css'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
+
+/** define URL Backend  */
 const baseURL = "http://localhost:8080";
 
 const header = {
@@ -13,7 +20,7 @@ const header = {
 }
 
 const transaksi = () => {
-    const [transaksi, setTransaksi] = useState([])
+    const [dataTransaksi, setDataTransaksi] = useState([])
     const [menu, setMenu] = useState([])
     const [meja, setMeja] = useState([])
 
@@ -22,26 +29,71 @@ const transaksi = () => {
         localStorage.getItem('user')
     )
 
-    const [id_user, setIdUser] = useState(
-        USER.id_user
-    )
+    const [hasSearchResults, setHasSearchResults] = useState(true);
+    const [id_user, setIdUser] = useState(USER.id_user)
     const [tgl_transaksi, setTglTransaksi] = useState("")
     const [nama_pelanggan, setNamaPelanggan] = useState("")
     const [id_meja, setIdMeja] = useState("")
 
+    /**-------------------ini state untuk search -------------------- */
     const [search, setSearch] = useState("")
-    const [role, setRole] = useState("")
 
-
-    const [detail_transaksi, setDetailTransaksi] =
-        useState([])
-    /** each detail contain ud_menu dan jumlah */
+    /** each detail contain id_menu dan jumlah */
+    const [detail_transaksi, setDetailTransaksi] = useState([])
 
     const [id_menu, setIdMenu] = useState("")
     const [jumlah, setJumlah] = useState(0)
-
     const [modal, setModal] = useState(null)
+
+    const [menuOrderCounts, setMenuOrderCounts] = useState({});
+
+    const handleSearchInputChange = (e) => {
+        const inputValue = e.target.value;
+        setSearch(inputValue);
+
+        // Check if the input is empty, and if so, refresh the window
+        if (inputValue === "") {
+            window.location.reload();
+        }
+    };
     /**-------------------ini akhir state-------------------- */
+
+    /** Chart Start */
+    const getMenuOrderCounts = () => {
+        const menuOrderCounts = {};
+        dataTransaksi.forEach((transaction) => {
+            transaction.detail_transaksi.forEach((detail) => {
+                const menuId = detail.id_menu;
+                if (menuOrderCounts[menuId]) {
+                    menuOrderCounts[menuId]++;
+                } else {
+                    menuOrderCounts[menuId] = 1;
+                }
+            });
+        });
+        return menuOrderCounts;
+    };
+
+    const formatMenuDataForChart = () => {
+        const data = [["Menu", "Sales (Qty)"]];
+        menu.forEach((menuItem) => {
+            const menuName = menuItem.nama_menu;
+            let totalQty = 0;
+            dataTransaksi.forEach((transaction) => {
+                transaction.detail_transaksi.forEach((detail) => {
+                    if (detail.id_menu === menuItem.id_menu) {
+                        totalQty += detail.jumlah;
+                    }
+                });
+            });
+            data.push([menuName, totalQty]);
+        });
+        return data;
+    };
+
+    const chartData = formatMenuDataForChart();
+
+    /** Chart End */
 
     /** method for get all menu */
     const getMenu = () => {
@@ -68,38 +120,43 @@ const transaksi = () => {
         const url = `${baseURL}/transaksi`
         axios.get(url, header)
             .then(response => {
-                setTransaksi(response.data.data)
+                setDataTransaksi(response.data.data)
             })
             .catch(error => console.log(error))
     }
 
     const addMenu = () => {
-        /** set selected menu */
-        let selectedMenu = menu.find(
-            item => item.id_menu == id_menu
-        )
+        //jika jumlah menu yang dipilih lebih dari 0 maka bisa di tambahkan
+        if (jumlah > 0) {
+            /** set selected menu */
+            let selectedMenu = menu.find(
+                item => item.id_menu == id_menu
+            )
 
-        let newItem = {
-            ...selectedMenu,
-            jumlah: jumlah
+            let newItem = {
+                ...selectedMenu,
+                jumlah: jumlah
+            }
+
+            let tempDetail = [...detail_transaksi]
+            /** insert new ittem to detail */
+            tempDetail.push(newItem)
+
+            /** update array detail menu */
+            setDetailTransaksi(tempDetail)
+
+            /** reset id option menu dan jumlah */
+            setIdMenu("")
+            setJumlah(0)
+        } else {
+            toast.error("Masukan jumlah menu yang ingin dipesan!")
         }
-
-        let tempDetail = [...detail_transaksi]
-        /** insert new ittem to detail */
-        tempDetail.push(newItem)
-
-        /** update array detail menu */
-        setDetailTransaksi(tempDetail)
-
-        /** reset id option menu dan jumlah */
-        setIdMenu("")
-        setJumlah(0)
     }
 
 
     const handleSaveTransaksi = event => {
         event.preventDefault()
-        if (nama_pelanggan === "" || id_meja === "" || tgl_transaksi === "" || detail_transaksi.length == 0) {
+        if (nama_pelanggan === "" || id_meja === "" || tgl_transaksi === "" || detail_transaksi.length === 0) {
             window.alert(`Isi Form Terlebih Dahulu!!`)
         } else {
             const url = `${baseURL}/transaksi`
@@ -111,7 +168,7 @@ const transaksi = () => {
             axios.post(url, payload, header)
                 .then(response => {
                     /** show message */
-                    window.alert(`Data Transaksi Berhasil Ditambahkan!`)
+                    toast.success("Transaksi berhasil ditambahkan!")
                     /** close model */
                     modal.hide()
 
@@ -128,6 +185,15 @@ const transaksi = () => {
 
                     /** recall get available meja */
                     getMeja()
+
+                    /** recall get menu */
+                    getMenu()
+
+                    /** recall get menu order counts */
+                    setMenuOrderCounts(getMenuOrderCounts());
+
+                    /** refresh */
+                    window.location.reload()
                 })
                 .catch(error => console.log(error))
         }
@@ -140,9 +206,10 @@ const transaksi = () => {
             axios.delete(url, header)
                 .then(response => getTransaksi())
                 .catch(error => console.log(error))
+
+            toast.success("Transaksi berhasil dihapus!")
         }
     }
-
 
     const handlePay = async item => {
         if (window.confirm(`Apakah yakin ingin membayar?`)) {
@@ -153,17 +220,71 @@ const transaksi = () => {
                 .then(response => {
                     getTransaksi()
                     getMeja()
+                    toast.success("Transaksi berhasil dibayar!")
                 })
                 .catch(error => console.log(error))
         }
     }
+
+    const formatTransactionToHTML = (transaction) => {
+        const { id_transaksi, tgl_transaksi, nama_pelanggan, meja, detail_transaksi } = transaction;
+        const userData = JSON.parse(localStorage.getItem('user'));
+
+        let html = `
+          <h2 style="text-align: center;">Transaction ID: ${id_transaksi}</h2>
+          <p style="text-align: center;">Date: ${tgl_transaksi}</p>
+          <p style="text-align: center;">Cashier Name: ${userData.nama_user}</p>
+          <p style="text-align: center;">Customer Name: <b>${nama_pelanggan}</b></p>
+          <p style="text-align: center;">Table Number: ${meja.nomor_meja}</p>
+          <p style="text-align: center;">----------------------------------------------------</p>
+          <h3 style="text-align: center;">Ordered Items:</h3>
+        `;
+
+        detail_transaksi.forEach((detail) => {
+            const { menu, jumlah, harga } = detail;
+            html += `
+              <p style="text-align: center;"><strong>${menu.nama_menu}</strong></p>
+                <p style="text-align: center;">Quantity: ${jumlah}</p>
+                <p style="text-align: center;">Price: Rp.${harga}</p>
+                <p style="text-align: center;">Subtotal: Rp.${Number(harga) * Number(jumlah)}</p>
+                <hr style="width: 130px"; />
+                <br/>
+                
+          `;
+        });
+
+        html += `
+            <p style="text-align: center;">----------------------------------------------------</p>
+            </ul>
+            <h3 style="text-align: center;">Total: Rp.${detail_transaksi.reduce((total, detail) => total + Number(detail.harga) * Number(detail.jumlah), 0)}</h3>
+            `;
+
+        html += `
+            <h4 style="text-align: center;">Terimakasih Sudah Mampir ke Wikusama Cafe !</h4>
+            `;
+
+        html += `</ul>`;
+        return html;
+    };
+
+
+    const handleCetakTransaksi = (item) => {
+        const formattedTransaction = formatTransactionToHTML(item);
+
+        // Open a new window and write the formatted content
+        const printWindow = window.open("Wikusama Cafe", "Print Transaction", "width=800,height=600");
+        printWindow.document.write(formattedTransaction);
+        printWindow.document.close();
+
+        // Trigger the print functionality
+        printWindow.print();
+    };
 
 
     //ambil data role dari local storage
     const ROLE = JSON.parse(
         localStorage.getItem('user')
     )
-
 
     useEffect(() => {
         getTransaksi()
@@ -174,57 +295,85 @@ const transaksi = () => {
         setModal(new Modal(`#modal-transaksi`))
     }, [])
 
+    const filteredTransaksi = dataTransaksi.filter(item =>
+        item.nama_pelanggan.toLowerCase().includes(search.toLowerCase()) ||
+        item.tgl_transaksi.toLowerCase().includes(search.toLowerCase()) ||
+        item.meja.nomor_meja.toLowerCase().includes(search.toLowerCase()) ||
+        item.status.toLowerCase().includes(search.toLowerCase())
+    );
+
+    useEffect(() => {
+        const menuOrderCounts = getMenuOrderCounts();
+        setMenuOrderCounts(menuOrderCounts);
+
+        setHasSearchResults(filteredTransaksi.length > 0);
+
+
+    }, [search, dataTransaksi]);
+
+
+
     return (
-        <div className="container-fluid p-4 w-100">
+        <div className="container-fluid p-16 w-100">
+
+            <div>
+                <div className="d-flex justify-content-start">
+                    <h3 className="text-secondary fw-normal">STATISTIK PENJUALAN MENU</h3>
+                </div>
+                {/* <Chart
+                    width={"100%"}
+                    height={300}
+                    chartType="BarChart"
+                    loader={<div>Loading Chart</div>}
+                    data={chartData}
+                    options={{
+                        title: "Menu Favorit",
+                        chartArea: { width: "50%" },
+                        hAxis: { title: "Menu", minValue: 0 },
+                        vAxis: { title: "Orders", minValue: 0 },
+                    }}
+                    rootProps={{ "data-testid": "1" }}
+                /> */}
+            </div>
+
             <div className="transaksi-tittle">
                 <div className="d-flex justify-content-start">
                     <h3 className="text-secondary fw-normal">DATA TRANSAKSI</h3>
                 </div>
-                <b>Note: </b><small className="fw-semibold">Data Transaksi Terbaru Selalu Berada di Atas</small>
             </div>
-            {/** buat tombol muncul hanya saar login dengan role 'kasir */}
-            {ROLE.role === "kasir" && (
-                <div className="d-flex justify-content-start">
-                    <button className="btn btn-dark btn-sm mb-3" onClick={() => modal.show()}> <i className="fas fa-plus"></i> Tambah Transaksi</button>
-                </div>
-            )}
 
-            {ROLE.role === "admin" && (
-                <div className="d-flex justify-content-start mb-3">
-                    <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Cari transaksi"
-                        value={search}
-                        onChange={e => setSearch(e.target.value)} // Fungsi untuk mengubah nilai pencarian
-                    />
+            <div className="trss d-flex justify-content-center align-items-center col-lg-12">
+                <div className="col-lg-6">
+                    {ROLE.role === "kasir" && (
+                        <div className="d-flex justify-content-start">
+                            <button className="btn btn-dark btn-sm mb-1" onClick={() => modal.show()}> <i class="bi bi-plus-circle"></i> Transaksi</button>
+                        </div>
+                    )}
                 </div>
-            )}
+                <div className="col-lg-6 text-end">
+                    <b>Note: </b><small className="fw-semibold"> Terbaru Selalu Berada di Atas</small>
+                </div>
+            </div>
 
-            {ROLE.role === "manajer" && (
-                <div className="d-flex justify-content-start mb-3">
-                    <input
-                        type="text"
-                        className="form-control"
+            <div className="d-flex justify-content-start mb-3">
+                <InputGroup>
+                    <InputGroup.Text id="basic-addon1"><i class="bi bi-search"></i></InputGroup.Text>
+                    <Form.Control
                         placeholder="Cari transaksi"
+                        aria-label="Cari transaksi"
+                        aria-describedby="basic-addon1"
+                        type="text"
                         value={search}
-                        onChange={e => setSearch(e.target.value)} // Fungsi untuk mengubah nilai pencarian
+                        onChange={handleSearchInputChange}
                     />
-                </div>
-            )}
+                </InputGroup>
+            </div>
 
             <ul className="list-group">
-                {transaksi
-                    //filter agar berdasarkan nama pelanggan dan tggl transaksi
-                    .filter(item =>
-                        item.nama_pelanggan.toLowerCase().includes(search.toLowerCase()) ||
-                        item.tgl_transaksi.toLowerCase().includes(search.toLowerCase()) ||
-                        item.meja.nomor_meja.toLowerCase().includes(search.toLowerCase()) ||
-                        item.status.toLowerCase().includes(search.toLowerCase())
-                    )
-                    .map((item, index) => (
-                        <li className="list-group-item text-bg-light pb-5 shadow-lg" key={`tran${index}`}>
-                            <div className="row">
+                {hasSearchResults ? (
+                    filteredTransaksi.map((item, index) => (
+                        <li className="list-group-item text-bg-light rounded-lg pb-5 mb-2 shadow-md" key={`tran${index}`}>
+                            <div className="row ">
                                 <div className="col-md-2">
                                     <small className="text-dark fw-bold">
                                         Tgl. Transaksi
@@ -262,6 +411,7 @@ const transaksi = () => {
                                         </>
                                         :
                                         <>
+
                                         </>}
                                 </div>
 
@@ -280,10 +430,14 @@ const transaksi = () => {
                                     <small className="text-dark fw-bold">
                                         Action
                                     </small> <br />
-                                    <button className="btn btn-sm btn-danger"
+                                    <button className="btn btn-sm btn-danger me-1"
                                         onClick={() => handleDeleteTransaksi(item)}>
                                         <i class="bi bi-trash"></i>
                                     </button>
+                                    <button className="btn btn-sm btn-dark" onClick={() => handleCetakTransaksi(item)}>
+                                        <i className="bi bi-printer"></i> Cetak
+                                    </button>
+
                                 </div>
 
 
@@ -327,11 +481,13 @@ const transaksi = () => {
                                 </ul>
                             </div>
                         </li>
-
-                    ))}
+                    ))
+                ) : (
+                    <p>No results found.</p>
+                )}
             </ul>
 
-            {/** modal for  */}
+            {/** Modal for  */}
             <div className="modal fade" id="modal-transaksi">
                 <div className="modal-dialog modal-lg">
                     <div className="modal-content">
@@ -357,6 +513,7 @@ const transaksi = () => {
                                             className="form-control"
                                             value={nama_pelanggan}
                                             placeholder="Nama"
+                                            required={true}
                                             onChange={
                                                 e => setNamaPelanggan(e.target.value)
                                             }
@@ -369,6 +526,7 @@ const transaksi = () => {
                                         <select
                                             className="form-control mb-2"
                                             value={id_meja}
+                                            required={true}
                                             onChange={e => setIdMeja(e.target.value)}
                                         >
                                             <option value="">--Pilih Meja--</option>
@@ -400,6 +558,7 @@ const transaksi = () => {
                                         </small>
                                         <select className="form-control mb-2"
                                             value={id_menu}
+
                                             onChange={e => setIdMenu(e.target.value)}>
                                             <option value="">--pilih menu--</option>
                                             {menu.map(item => (
@@ -475,11 +634,13 @@ const transaksi = () => {
                                 <button type="submit" className="w-100 btn btn-dark my-2">
                                     Simpan
                                 </button>
+
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
+            <ToastContainer />
         </div>
     )
 }

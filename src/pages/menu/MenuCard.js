@@ -7,8 +7,8 @@ export default function MenuCard(props) {
             <div className="card-footer gambar border-0 d-flex justify-center align-middle">
                 <img src={props.img} className="card-img-top" alt="img-menu"></img>
             </div>
-            <div class="card-body">
-                <h4 class="card-title fw-bold text-red-600 fst-italic">{props.nama_menu}</h4>
+            <div className="card-body">
+                <h4 className="card-title text-center mb-5">-- <span class="bg-gray-100 text-white text-sm font-medium mr-2 px-2.5 py-1 rounded dark:bg-black dark:text-gray-300">{props.nama_menu}</span>--</h4>
                 <h6 className="card-text"><b>Deskripsi:</b> <small>{props.deskripsi}</small></h6>
                 <h6 className="card-text"><b>Jenis:</b> {props.jenis}</h6>
                 <small className="card-text"><b className='text-dark'>Harga: Rp.</b>{props.harga}</small>

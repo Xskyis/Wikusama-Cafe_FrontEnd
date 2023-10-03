@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import { Modal } from 'bootstrap'
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 /** library for connect to another server */
 import axios from 'axios'
@@ -49,14 +51,14 @@ export default function Menu() {
 
   async function searching(e) {
     try {
-      if (e.keyCode == 13) {
+      if (e.keyCode === 13) {
         let url = `${baseURL}/menu/find`
         let dataSearch = {
           keyword: keyword
         }
         let { data } = await axios.post(url, dataSearch, header)
         setMenus(data.data)
-      } else if (e.keyCode == 13 || keyword == "") {
+      } else if (e.keyCode === 13 || keyword === "") {
         getMenu()
       }
     } catch (error) {
@@ -120,7 +122,7 @@ export default function Menu() {
           /** refresh data menu */
           getMenu()
         }
-        window.alert(result.data.message)
+        toast.success(result.data.message)
 
       } else {
         /** ini utk tambah */
@@ -139,7 +141,7 @@ export default function Menu() {
           /** refresh data menu */
           getMenu()
         }
-        window.alert(result.data.message)
+        toast.success(result.data.message)
       }
     } catch (error) {
       console.log('====================================');
@@ -156,7 +158,7 @@ export default function Menu() {
         axios.delete(url, header)
           .then(result => {
             if (result.data.status == true) {
-              window.alert(result.data.message)
+              toast.success(result.data.message)
             }
             /** refresh data */
             getMenu()
@@ -180,15 +182,16 @@ export default function Menu() {
   }, [])
 
   return (
-    <div className='container-fluid p-4 w-100'>
-      <div className="title d-flex justify-start mb-2">
+    <div className='container-fluid p-16 w-100'>
+      <div className="title d-flex justify-start mb-1">
         <h3 className='text-secondary fw-normal'>DAFTAR MENU</h3>
       </div>
+
       <button className='btn btn-sm btn-dark mb-1' onClick={() => addMenu()}>
-        Tambah Menu
+      <i class="bi bi-plus-circle"></i> Menu
       </button>
 
-      <InputGroup className="mb-3 mt-3">
+      <InputGroup className="mb-3 mt-2">
         <InputGroup.Text id="basic-addon1"><i class="bi bi-search"></i></InputGroup.Text>
         <Form.Control
           placeholder="Pencarian"
@@ -274,15 +277,18 @@ export default function Menu() {
                   <option value="minuman">Minuman</option>
                 </select>
               </div>
+
               <div className="modal-footer">
                 <button type='submit' className='w-100 btn btn-dark'>
                   Simpan
                 </button>
               </div>
+
             </form>
           </div>
         </div>
       </div>
+      <ToastContainer />
     </div>
   )
 }

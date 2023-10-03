@@ -16,10 +16,6 @@ code {
     monospace;
 }
 
-::-webkit-scrollbar {
-  display: none;
-}
-
 .sidebar{
   width: 50%;
   position: absolute;
@@ -27,8 +23,6 @@ code {
   top: 0;
   left: 0;
 }
-
-@media only screen and (min-width: 992px) {}
 
 .animate-character
 {
@@ -45,7 +39,6 @@ code {
   background-size: 200% auto;
   color: #fff;
   background-clip: text;
-  text-fill-color: transparent;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: textclip 2s linear infinite;

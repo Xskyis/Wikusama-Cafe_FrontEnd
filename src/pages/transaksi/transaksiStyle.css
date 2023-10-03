@@ -1,0 +1,6 @@
+@media (max-width: 767px) {
+    .trss {
+        gap: 55px;
+        padding-left: 0px;  
+    }
+  }

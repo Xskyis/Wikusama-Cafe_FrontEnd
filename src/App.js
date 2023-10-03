@@ -14,7 +14,7 @@ export default function App() {
 
     return (
         <BrowserRouter>
-            <Navbar />
+            <Navbar/>
             <Routes>
                 <Route path="/home" element={
                     <Middleware roles={['admin', 'manajer', 'kasir']}>
@@ -52,9 +52,6 @@ export default function App() {
                         </Sidebar>
                     </Middleware>
                 } />
-
-                <Route path="/test" element={<Sidebar />} />
-
             </Routes>
         </BrowserRouter>
     )
